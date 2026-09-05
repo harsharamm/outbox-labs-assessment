@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import passport from "../config/passport";
 import { env } from "../config/env";
 import { signAuthToken, verifyAuthToken } from "../lib/jwt";
@@ -29,7 +29,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", { session: false, failureRedirect: `${env.frontendUrl}/login?error=google` }),
-  (req, res) => {
+  (req: Request, res: Response) => {
     const user = req.user as User;
     const token = signAuthToken({ userId: user.id });
     res.cookie(AUTH_COOKIE_NAME, token, cookieOptions);
@@ -37,18 +37,18 @@ router.get(
   }
 );
 
-router.post("/logout", (_req, res) => {
+router.post("/logout", (_req: Request, res: Response) => {
   res.clearCookie(AUTH_COOKIE_NAME);
   res.json({ ok: true });
 });
 
 // --- Slack OAuth (must be logged in already) ---
-router.get("/slack", requireAuth, (req, res) => {
+router.get("/slack", requireAuth, (req: Request, res: Response) => {
   const state = signAuthToken({ userId: req.userId! });
   res.redirect(getSlackAuthorizeUrl(state));
 });
 
-router.get("/slack/callback", async (req, res) => {
+router.get("/slack/callback", async (req: Request, res: Response) => {
   try {
     const { code, state } = req.query as { code?: string; state?: string };
     if (!code || !state) {

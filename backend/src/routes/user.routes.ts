@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { requireAuth } from "../middleware/auth";
 import { prisma } from "../db/prisma";
 
 const router = Router();
 
-router.get("/me", requireAuth, async (req, res) => {
+router.get("/me", requireAuth, async (req: Request, res: Response) => {
   const user = await prisma.user.findUnique({
     where: { id: req.userId! },
     include: { slackIntegration: true },
@@ -20,7 +20,7 @@ router.get("/me", requireAuth, async (req, res) => {
   });
 });
 
-router.post("/slack/disconnect", requireAuth, async (req, res) => {
+router.post("/slack/disconnect", requireAuth, async (req: Request, res: Response) => {
   await prisma.slackIntegration.updateMany({
     where: { userId: req.userId! },
     data: { connected: false, accessToken: null, webhookUrl: null },

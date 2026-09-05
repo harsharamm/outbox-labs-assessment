@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
 import { prisma } from "../db/prisma";
@@ -15,7 +15,7 @@ const createSenderSchema = z.object({
   smtpPort: z.number().optional(),
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response) => {
   const senders = await prisma.sender.findMany({
     where: { userId: req.userId! },
     select: { id: true, name: true, email: true, createdAt: true },
@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
   res.json(senders);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", async (req: Request, res: Response) => {
   const parsed = createSenderSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
   res.status(201).json({ id: sender.id, name: sender.name, email: sender.email });
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   await prisma.sender.deleteMany({
     where: { id: req.params.id, userId: req.userId! },
   });

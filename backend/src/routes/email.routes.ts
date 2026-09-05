@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import multer from "multer";
 import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
@@ -21,7 +21,7 @@ const scheduleSchema = z.object({
   hourlyLimit: z.coerce.number().int().min(1),
 });
 
-router.post("/schedule", upload.single("file"), async (req, res) => {
+router.post("/schedule", upload.single("file"), async (req: Request, res: Response) => {
   const parsed = scheduleSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
@@ -56,7 +56,7 @@ router.post("/schedule", upload.single("file"), async (req, res) => {
   res.status(201).json({ ...result, recipientCount: recipients.length });
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response) => {
   const status = req.query.status === "sent" ? "SENT" : "SCHEDULED";
   const jobs = await prisma.emailJob.findMany({
     where: {
@@ -81,7 +81,7 @@ router.get("/", async (req, res) => {
   );
 });
 
-router.get("/search", async (req, res) => {
+router.get("/search", async (req: Request, res: Response) => {
   const q = String(req.query.q ?? "");
   const status = req.query.status === "sent" ? "SENT" : req.query.status === "scheduled" ? "SCHEDULED" : undefined;
   try {
