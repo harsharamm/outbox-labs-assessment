@@ -9,9 +9,13 @@ import type { User } from "@prisma/client";
 
 const router = Router();
 
+// In production the frontend (Vercel) and backend (Render) are different
+// sites, so the cookie needs SameSite=None (which requires Secure) to be
+// sent on cross-site fetch calls. Locally, frontend/backend share the
+// "localhost" site so Lax works and avoids needing HTTPS in dev.
 const cookieOptions = {
   httpOnly: true,
-  sameSite: "lax" as const,
+  sameSite: (env.nodeEnv === "production" ? "none" : "lax") as "none" | "lax",
   secure: env.nodeEnv === "production",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };

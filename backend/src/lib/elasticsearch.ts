@@ -1,5 +1,4 @@
-import { Client } from "@elastic/elasticsearch";
-import type { QueryDslQueryContainer } from "@elastic/elasticsearch/lib/api/types";
+import { Client, estypes } from "@elastic/elasticsearch";
 import { env } from "../config/env";
 
 export const esClient = new Client({ node: env.elasticsearchUrl });
@@ -50,7 +49,7 @@ export async function indexEmail(id: string, doc: EmailDoc) {
 }
 
 export async function searchEmails(userId: string, query: string, status?: string) {
-  const filter: QueryDslQueryContainer[] = [{ term: { userId } }];
+  const filter: estypes.QueryDslQueryContainer[] = [{ term: { userId } }];
   if (status) {
     filter.push({ term: { status } });
   }
